@@ -88,13 +88,13 @@ User receives reminders for each goal
 
 
 ## Wireframes
-![Test_11zon](https://hackmd.io/_uploads/HJebb8Bbyx.jpg)
+<img src="https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_7b9a27c787f20892fd986620b4c1dd0f.jpg?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1730669042&Signature=N6NYUgaglioKT3K9VHVjooWa%2FeM%3D" width=600>
 
 
 
 ### [BONUS] Digital Wireframes & Mockups
 
-<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/u2KBA0lfiXRujWv3ze5yw0/Untitled?node-id=0-1&embed-host=share" allowfullscreen></iframe>
+You can view the digital wireframes and mockups on Figma by clicking [here](https://embed.figma.com/design/u2KBA0lfiXRujWv3ze5yw0/Untitled?node-id=0-1&embed-host=share).
 
 ### [BONUS] Interactive Prototype
 
