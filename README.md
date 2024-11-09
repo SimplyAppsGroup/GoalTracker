@@ -101,7 +101,16 @@ You can view the digital wireframes and mockups on Figma by clicking [here](http
 ## Schema 
 
 ### Progress Gifs
-<div style="position: relative; padding-bottom: 216.4785553047404%; height: 0;"><iframe src="https://www.loom.com/embed/5f6495ed20ea42c6854b786b62f94d95?sid=c1b67e59-176f-439b-9237-089a5547f479" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<div>
+    <a href="https://www.loom.com/share/5f6495ed20ea42c6854b786b62f94d95">
+      <p>iOS recording - 09 Nov 2024 - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/5f6495ed20ea42c6854b786b62f94d95">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/5f6495ed20ea42c6854b786b62f94d95-f6496423db908224-full-play.gif">
+    </a>
+  </div>
+
 
 ### Models
 
