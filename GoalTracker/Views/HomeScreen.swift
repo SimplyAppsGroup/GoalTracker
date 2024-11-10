@@ -4,28 +4,33 @@
 //
 //  Created by Desiree on 11/5/24.
 //
+
 import SwiftUI
 
 struct HomeScreen: View {
     @ObservedObject var viewModel: GoalViewModel
-    @State private var selectedDate = Date()
-    @State private var selectedDay: String = "Monday"
+    @ObservedObject var calendarViewModel = CalendarViewModel()  // Using CalendarViewModel for date handling
     @State private var isAddGoalPresented: Bool = false
     @State private var goalToEdit: Goal?
 
     var body: some View {
         NavigationView {
             VStack {
-                DateHeaderView(date: $selectedDate)
-                DaySelectorView(selectedDay: $selectedDay, selectedDate: $selectedDate)
-                GoalsSummaryView(viewModel: viewModel, selectedDate: selectedDate)
-                
-                GoalListView(
-                    viewModel: viewModel,
-                    selectedDate: selectedDate,
-                    isAddGoalPresented: $isAddGoalPresented,
-                    goalToEdit: $goalToEdit
-                )
+                DateHeaderView(date: $calendarViewModel.selectedDate, showFullCalendar: $calendarViewModel.showFullCalendar)
+
+                if calendarViewModel.showFullCalendar {
+                    FullCalendarView(calendarViewModel: calendarViewModel)
+                } else {
+                    DaySelectorView(selectedDate: $calendarViewModel.selectedDate)
+                    GoalsSummaryView(viewModel: viewModel, selectedDate: calendarViewModel.selectedDate)
+
+                    GoalListView(
+                        viewModel: viewModel,
+                        selectedDate: calendarViewModel.selectedDate,
+                        isAddGoalPresented: $isAddGoalPresented,
+                        goalToEdit: $goalToEdit
+                    )
+                }
             }
             .navigationBarTitle("Goal Tracker", displayMode: .inline)
             .navigationBarHidden(true)
@@ -40,74 +45,63 @@ struct HomeScreen: View {
     }
 }
 
-
 struct DateHeaderView: View {
     @Binding var date: Date
-    
+    @Binding var showFullCalendar: Bool  // Toggle for full calendar display
+
     var body: some View {
-        Text("\(formattedDate(date))")
-            .font(.title)
-            .fontWeight(.bold)
-            .padding()
-            .background(Color.gray)
-            .foregroundColor(.white)
-            .padding(.top)
+        Button(action: {
+            showFullCalendar.toggle()  // Toggle full calendar display
+        }) {
+            Text("\(formattedMonthYear(date))")
+                .font(.title)
+                .fontWeight(.bold)
+                .padding()
+                .background(Color.gray)
+                .foregroundColor(.white)
+        }
+        .padding(.top)
     }
-    
-    func formattedDate(_ date: Date) -> String {
+
+    func formattedMonthYear(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .full
+        formatter.dateFormat = "MMMM yyyy"
         return formatter.string(from: date)
     }
 }
 
 struct DaySelectorView: View {
-    @Binding var selectedDay: String
     @Binding var selectedDate: Date
-    
-    let daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    
+
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                ForEach(daysOfWeek, id: \.self) { day in
-                    Text(day)
-                        .padding()
-                        .background(self.isSelected(day) ? Color.blue : Color.gray.opacity(0.5))
-                        .cornerRadius(10)
-                        .foregroundColor(.white)
-                        .onTapGesture {
-                            self.selectedDay = day
-                            self.selectedDate = self.dateForDay(day)
-                        }
+        let calendar = Calendar.current
+        guard let startOfWeek = selectedDate.startOfWeek() else { return AnyView(EmptyView()) }
+        let currentWeek = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
+
+        return AnyView(
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(currentWeek, id: \.self) { day in
+                        Text("\(calendar.component(.day, from: day))")
+                            .padding()
+                            .background(calendar.isDate(day, inSameDayAs: selectedDate) ? Color.blue : Color.gray.opacity(0.5))
+                            .cornerRadius(10)
+                            .foregroundColor(.white)
+                            .onTapGesture {
+                                selectedDate = day
+                            }
+                    }
                 }
             }
-        }
-        .padding()
-    }
-    
-    func isSelected(_ day: String) -> Bool {
-        let calendar = Calendar.current
-        let selectedWeekday = calendar.component(.weekday, from: selectedDate)
-        let dayIndex = daysOfWeek.firstIndex(of: day)! + 1
-        return selectedWeekday == dayIndex
-    }
-    
-    func dateForDay(_ day: String) -> Date {
-        let calendar = Calendar.current
-        let weekdayIndex = daysOfWeek.firstIndex(of: day)! + 1
-        let today = Date()
-        let weekdayToday = calendar.component(.weekday, from: today)
-        
-        let dayDifference = weekdayIndex - weekdayToday
-        return calendar.date(byAdding: .day, value: dayDifference, to: today)!
+            .padding()
+        )
     }
 }
 
 struct GoalsSummaryView: View {
     var viewModel: GoalViewModel
     var selectedDate: Date
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -117,10 +111,10 @@ struct GoalsSummaryView: View {
                 Spacer()
             }
             .padding()
-            .background(Color(red: 0.6, green: 0.8, blue: 0.6))
+            .background(Color.green)
             .cornerRadius(10)
             .padding(.bottom, 5)
-            
+
             HStack {
                 Text("Total Missed Goals: \(viewModel.totalMissedGoals(for: selectedDate))")
                     .font(.headline)
@@ -128,7 +122,7 @@ struct GoalsSummaryView: View {
                 Spacer()
             }
             .padding()
-            .background(Color(red: 0.9, green: 0.7, blue: 0.7))
+            .background(Color.red)
             .cornerRadius(10)
         }
         .padding(.horizontal)
@@ -140,7 +134,7 @@ struct GoalListView: View {
     var selectedDate: Date
     @Binding var isAddGoalPresented: Bool
     @Binding var goalToEdit: Goal?
-    
+
     @State private var showActionSheet = false
     @State private var selectedGoal: Goal?
 
@@ -156,7 +150,7 @@ struct GoalListView: View {
         }
         .listStyle(PlainListStyle())
         .padding(.bottom)
-        
+
         Button(action: {
             isAddGoalPresented = true
         }) {
@@ -188,7 +182,7 @@ struct GoalListView: View {
             )
         }
     }
-    
+
     private func deleteGoal(_ goal: Goal) {
         if let index = viewModel.goals.firstIndex(where: { $0.id == goal.id }) {
             viewModel.goals.remove(at: index)
@@ -212,7 +206,7 @@ struct GoalRowView: View {
                     .foregroundColor(goal.isCompleted ? .green : .blue)
                     .padding(.trailing, 10)
             }
-            
+
             Text(goal.description)
                 .foregroundColor(.primary)
                 .font(.headline)
@@ -223,11 +217,19 @@ struct GoalRowView: View {
         .cornerRadius(10)
         .shadow(radius: 5)
     }
-    
+
     private func toggleGoalCompletion(_ goal: Goal) {
         if let index = viewModel.goals.firstIndex(where: { $0.id == goal.id }) {
             viewModel.goals[index].isCompleted.toggle()
             viewModel.saveGoals()
         }
+    }
+}
+
+extension Date {
+    func startOfWeek() -> Date? {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
+        return calendar.date(from: components)
     }
 }
