@@ -7,10 +7,11 @@ import SwiftUI
 import UserNotifications
 
 // Enum to specify repeat intervals
-enum ReminderInterval: String, CaseIterable, Identifiable {
+enum ReminderInterval: String, CaseIterable, Identifiable, Codable {
     case none
     case daily
     case weekly
+    case onTime  // New option for one-time reminders
 
     var id: String { self.rawValue }
 }
@@ -24,7 +25,7 @@ struct CreateGoalView: View {
     // State properties for creating or editing a goal
     @State private var description: String = ""
     @State private var isCompleted: Bool = false
-    @State private var reminderTime: Date? = nil
+    @State private var reminderTime: Date = Date()  // Default to current date and time
     @State private var repeatInterval: ReminderInterval = .none
 
     // Date picker state
@@ -38,6 +39,7 @@ struct CreateGoalView: View {
             _description = State(initialValue: existingGoal.description)
             _selectedDate = State(initialValue: existingGoal.dueDate)
             _isCompleted = State(initialValue: existingGoal.isCompleted)
+            _repeatInterval = State(initialValue: existingGoal.reminderInterval)  // Load reminder interval
         }
     }
 
@@ -62,6 +64,7 @@ struct CreateGoalView: View {
                         Text("None").tag(ReminderInterval.none)
                         Text("Daily").tag(ReminderInterval.daily)
                         Text("Weekly").tag(ReminderInterval.weekly)
+                        Text("On Time").tag(ReminderInterval.onTime)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding(.vertical, 5)
@@ -73,9 +76,7 @@ struct CreateGoalView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         saveGoal()
-                        if let reminderTime = reminderTime {
-                            scheduleNotification(at: reminderTime, repeatInterval: repeatInterval)
-                        }
+                        scheduleNotification(at: selectedDate, repeatInterval: repeatInterval)
                     }
                     .font(.headline)
                     .foregroundColor(.blue)
@@ -96,9 +97,10 @@ struct CreateGoalView: View {
             updatedGoal.description = description
             updatedGoal.dueDate = selectedDate
             updatedGoal.isCompleted = isCompleted
+            updatedGoal.reminderInterval = repeatInterval  // Save reminder interval
             viewModel.updateGoal(updatedGoal)
         } else {
-            let newGoal = Goal(description: description, isCompleted: false, dueDate: selectedDate)
+            let newGoal = Goal(description: description, isCompleted: false, dueDate: selectedDate, reminderInterval: repeatInterval)
             viewModel.goals.append(newGoal)
             viewModel.saveGoals()
         }
@@ -106,28 +108,57 @@ struct CreateGoalView: View {
     }
 
     private func scheduleNotification(at time: Date, repeatInterval: ReminderInterval) {
+        // Request notification permission if not already granted
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error = error {
+                print("Error requesting notification permission: \(error.localizedDescription)")
+            } else if granted {
+                DispatchQueue.main.async {
+                    self.createNotification(at: time, repeatInterval: repeatInterval)
+                }
+            } else {
+                print("Notification permission denied.")
+            }
+        }
+    }
+
+    private func createNotification(at time: Date, repeatInterval: ReminderInterval) {
         let content = UNMutableNotificationContent()
         content.title = "Goal Reminder"
         content.body = "Don't forget: \(description)"
         content.sound = .default
 
-        var triggerDate = Calendar.current.dateComponents([.hour, .minute], from: time)
-        
+        var trigger: UNNotificationTrigger
+
         switch repeatInterval {
         case .daily:
-            triggerDate = Calendar.current.dateComponents([.hour, .minute], from: time)
-        case .weekly:
-            triggerDate = Calendar.current.dateComponents([.weekday, .hour, .minute], from: time)
-        case .none:
-            break
-        }
+            let triggerDate = Calendar.current.dateComponents([.hour, .minute], from: time)
+            trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: true)
+            print("Daily notification scheduled with trigger date components: \(triggerDate)")
 
-        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: repeatInterval != .none)
+        case .weekly:
+            let triggerDate = Calendar.current.dateComponents([.weekday, .hour, .minute], from: time)
+            trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: true)
+            print("Weekly notification scheduled with trigger date components: \(triggerDate)")
+
+        case .onTime, .none:
+            // Calculate the time interval in seconds between now and the target time
+            let interval = time.timeIntervalSinceNow
+            if interval > 0 {
+                trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
+                print("One-time notification scheduled to trigger in \(interval) seconds at \(time)")
+            } else {
+                print("Notification time is in the past; notification not scheduled.")
+                return
+            }
+        }
 
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error scheduling notification: \(error.localizedDescription)")
+            } else {
+                print("Notification scheduled successfully for \(time) with interval \(repeatInterval.rawValue)")
             }
         }
     }

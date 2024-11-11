@@ -12,12 +12,14 @@ struct Goal: Identifiable, Codable {
     var description: String
     var isCompleted: Bool
     var dueDate: Date
+    var reminderInterval: ReminderInterval
 
-    // Initialize the Goal struct
-    init(description: String, isCompleted: Bool, dueDate: Date) {
-        self.id = UUID()  // Assign a unique ID for each goal
+    // Initialize the Goal struct with reminderInterval
+    init(description: String, isCompleted: Bool, dueDate: Date, reminderInterval: ReminderInterval = .none) {
+        self.id = UUID()
         self.description = description
         self.isCompleted = isCompleted
         self.dueDate = dueDate
+        self.reminderInterval = reminderInterval
     }
 }
