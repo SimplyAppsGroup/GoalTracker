@@ -43,10 +43,10 @@ User receives reminders for each goal
 
 ### 2. Screen Archetypes
 
-- [ ] **Home Screen**
+- [X] **Home Screen**
     * User can view and add new goals from this screen.
     * User can log achievements.
-- [ ] **Goal Detail Screen**
+- [X] **Goal Detail Screen**
     * User can set and edit reminders for each goal.
 - [ ] **Progress Screen**
     * User can track goal progress/completion. 
@@ -59,19 +59,19 @@ User receives reminders for each goal
 **Tab Navigation** (Tab to Screen)
 
 
-- [ ] Home
-- [ ] Goals
+- [X] Home
+- [X] Goals
 - [ ] Progress
 - [ ] Insights
 
 **Flow Navigation** (Screen to Screen)
 
 
-- [ ] **Home Screen**
+- [X] **Home Screen**
     * Leads to Goal Detail Screen
     * Leads to Progress Screen
 
-- [ ] **Goal Detail Screen**
+- [X] **Goal Detail Screen**
     * Leads to Home Screen
     * Leads to Progress Screen
 
@@ -110,6 +110,18 @@ You can view the digital wireframes and mockups on Figma by clicking [here](http
       <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/5f6495ed20ea42c6854b786b62f94d95-f6496423db908224-full-play.gif">
     </a>
   </div>
+  <div>
+    <a href="https://www.loom.com/share/5910dbb07f6c40799d6d66e06d583efc">
+      <p>Library | Loom - 11 November 2024 - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/5910dbb07f6c40799d6d66e06d583efc">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/5910dbb07f6c40799d6d66e06d583efc-00ed141299802ddf-full-play.gif">
+    </a>
+  </div>
+<img src="https://i.imgur.com/QZnAPhx.gif" alt="Description of GIF" />
+
+
+
 
 
 ### Models
