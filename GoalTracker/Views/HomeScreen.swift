@@ -5,7 +5,6 @@
 
 import SwiftUI
 
-
 struct HomeScreen: View {
     @ObservedObject var viewModel: GoalViewModel
     @ObservedObject var calendarViewModel = CalendarViewModel()  // Using CalendarViewModel for date handling
@@ -130,7 +129,6 @@ struct GoalListView: View {
     @Binding var isAddGoalPresented: Bool
     @Binding var goalToEdit: Goal?
 
-    @State private var showActionSheet = false
     @State private var selectedGoal: Goal?
 
     var body: some View {
@@ -138,8 +136,16 @@ struct GoalListView: View {
             ForEach(viewModel.goalsForDate(selectedDate)) { goal in
                 GoalRowView(goal: goal, viewModel: viewModel)
                     .onTapGesture {
-                        selectedGoal = goal
-                        showActionSheet = true
+                        toggleGoalCompletion(goal) // Mark complete on tap
+                    }
+                    .contextMenu { // Show edit and delete on hold
+                        Button("Edit Goal") {
+                            goalToEdit = goal
+                            isAddGoalPresented = true
+                        }
+                        Button("Delete Goal", role: .destructive) {
+                            deleteGoal(goal)
+                        }
                     }
             }
         }
@@ -158,23 +164,12 @@ struct GoalListView: View {
                 .cornerRadius(8)
         }
         .padding()
-        .actionSheet(isPresented: $showActionSheet) {
-            ActionSheet(
-                title: Text("Goal Options"),
-                message: Text("What would you like to do with this goal?"),
-                buttons: [
-                    .default(Text("Edit Goal")) {
-                        goalToEdit = selectedGoal
-                        isAddGoalPresented = true
-                    },
-                    .destructive(Text("Delete Goal"), action: {
-                        if let goal = selectedGoal {
-                            deleteGoal(goal)
-                        }
-                    }),
-                    .cancel()
-                ]
-            )
+    }
+
+    private func toggleGoalCompletion(_ goal: Goal) {
+        if let index = viewModel.goals.firstIndex(where: { $0.id == goal.id }) {
+            viewModel.goals[index].isCompleted.toggle()
+            viewModel.saveGoals()
         }
     }
 
@@ -192,15 +187,11 @@ struct GoalRowView: View {
 
     var body: some View {
         HStack {
-            Button(action: {
-                toggleGoalCompletion(goal)
-            }) {
-                Image(systemName: goal.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(goal.isCompleted ? .green : .blue)
-                    .padding(.trailing, 10)
-            }
+            Image(systemName: goal.isCompleted ? "checkmark.circle.fill" : "circle")
+                .resizable()
+                .frame(width: 30, height: 30)
+                .foregroundColor(goal.isCompleted ? .green : .blue)
+                .padding(.trailing, 10)
 
             Text(goal.description)
                 .foregroundColor(.primary)
@@ -211,13 +202,6 @@ struct GoalRowView: View {
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 5)
-    }
-
-    private func toggleGoalCompletion(_ goal: Goal) {
-        if let index = viewModel.goals.firstIndex(where: { $0.id == goal.id }) {
-            viewModel.goals[index].isCompleted.toggle()
-            viewModel.saveGoals()
-        }
     }
 }
 
