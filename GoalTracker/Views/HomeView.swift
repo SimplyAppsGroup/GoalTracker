@@ -85,7 +85,7 @@ struct HomeView: View {
             .padding()
         }
         .sheet(isPresented: $isAddGoalPresented) {
-            AddGoalView(isPresented: $isAddGoalPresented, goals: $goals, goalToEdit: goalToEdit)
+            CreateGoalView(goal: $goalToEdit, viewModel: GoalViewModel(), isPresented: $isAddGoalPresented)
         }
     }
 
@@ -99,11 +99,5 @@ struct HomeView: View {
         if let index = goals.firstIndex(where: { $0.id == goal.id }) {
             goals.remove(at: index)
         }
-    }
-}
-
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
     }
 }

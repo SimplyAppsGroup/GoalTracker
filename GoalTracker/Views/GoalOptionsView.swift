@@ -52,7 +52,7 @@ struct GoalOptionsView: View {
         .cornerRadius(10)
         .shadow(radius: 10)
         .sheet(isPresented: $isEditGoalViewPresented) {
-            EditGoalView(goal: .constant(goal), viewModel: viewModel, isPresented: $isEditGoalViewPresented)
+            CreateGoalView(goal: .constant(goal), viewModel: viewModel, isPresented: $isEditGoalViewPresented)
         }
 
     }

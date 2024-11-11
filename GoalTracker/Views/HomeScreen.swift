@@ -1,11 +1,10 @@
-//
-//  HomeView.swift
+//  HomeScreen.swift
 //  GoalTracker
 //
 //  Created by Desiree on 11/5/24.
-//
 
 import SwiftUI
+
 
 struct HomeScreen: View {
     @ObservedObject var viewModel: GoalViewModel
@@ -35,11 +34,7 @@ struct HomeScreen: View {
             .navigationBarTitle("Goal Tracker", displayMode: .inline)
             .navigationBarHidden(true)
             .sheet(isPresented: $isAddGoalPresented, onDismiss: { goalToEdit = nil }) {
-                if let goal = goalToEdit {
-                    EditGoalView(goal: .constant(goal), viewModel: viewModel, isPresented: $isAddGoalPresented)
-                } else {
-                    AddGoalView(isPresented: $isAddGoalPresented, goals: $viewModel.goals)
-                }
+                CreateGoalView(goal: $goalToEdit, viewModel: viewModel, isPresented: $isAddGoalPresented)
             }
         }
     }
