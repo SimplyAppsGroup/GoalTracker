@@ -9,8 +9,18 @@
 import SwiftUI
 
 struct InsightsScreen: View {
+    @ObservedObject var viewModel: GoalViewModel
+    
     var body: some View {
-        Text("Insights Screen")
-            .font(.largeTitle)
+        VStack {
+            HStack {
+                Text("Insights Screen")
+                    .font(.largeTitle)
+            }
+        }
     }
+}
+
+#Preview {
+    ContentView()
 }

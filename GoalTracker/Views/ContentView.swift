@@ -12,21 +12,23 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
-            HomeScreen(viewModel: GoalViewModel()) // Main screen content
+            HomeScreen(viewModel: viewModel) // Main screen content
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
-            // Placeholder for Progress Screen
-            Text("Progress Screen")
+
+            ProgressScreen(viewModel: viewModel) // Progress screen content
                 .tabItem {
                     Label("Progress", systemImage: "chart.bar")
                 }
             
-            // Placeholder for Insights Screen
-            Text("Insights Screen")
+            InsightsScreen(viewModel: viewModel) // Progress screen content
                 .tabItem {
                     Label("Insights", systemImage: "chart.pie")
                 }
         }
     }
+}
+#Preview {
+    ContentView()
 }

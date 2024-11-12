@@ -54,4 +54,48 @@ class GoalViewModel: ObservableObject {
         let goalsForTheDay = goalsForDate(date)
         return goalsForTheDay.filter { !$0.isCompleted }.count
     }
+
+    // New Methods for ProgressScreen:
+    
+    // Function to get the total number of goals
+    var totalGoals: Int {
+        goals.count
+    }
+
+    // Function to get the number of completed goals
+    var goalsMet: Int {
+        goals.filter { $0.isCompleted }.count
+    }
+
+    // Function to get the goals per month
+    func goalsPerMonth(for month: Date) -> Int {
+        let calendar = Calendar.current
+        return goals.filter {
+            calendar.isDate($0.dueDate, equalTo: month, toGranularity: .month)
+        }.count
+    }
+
+    // Function to get the goals met per month
+    func goalsMetPerMonth(for month: Date) -> Int {
+        let calendar = Calendar.current
+        return goals.filter {
+            $0.isCompleted && calendar.isDate($0.dueDate, equalTo: month, toGranularity: .month)
+        }.count
+    }
+
+    // Function to get the goals per year
+    func goalsPerYear(for year: Date) -> Int {
+        let calendar = Calendar.current
+        return goals.filter {
+            calendar.isDate($0.dueDate, equalTo: year, toGranularity: .year)
+        }.count
+    }
+
+    // Function to get the goals met per year
+    func goalsMetPerYear(for year: Date) -> Int {
+        let calendar = Calendar.current
+        return goals.filter {
+            $0.isCompleted && calendar.isDate($0.dueDate, equalTo: year, toGranularity: .year)
+        }.count
+    }
 }

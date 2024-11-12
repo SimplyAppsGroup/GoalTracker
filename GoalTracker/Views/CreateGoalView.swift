@@ -177,3 +177,7 @@ struct CustomDateTimePicker: View {
         .labelsHidden()
     }
 }
+
+#Preview {
+    ContentView()
+}
