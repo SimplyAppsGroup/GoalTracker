@@ -166,10 +166,12 @@ struct GoalListView: View {
                                 deleteGoal(goal)
                             }
                         }
+                        .listRowBackground(Color(red: 20/255, green: 25/255, blue: 40/255)) // Match row background
                 }
-                .background(Color(red: 20/255, green: 25/255, blue: 40/255))
             }
             .listStyle(PlainListStyle())
+            .background(Color(red: 20/255, green: 25/255, blue: 40/255)) // Match list background
+            .scrollContentBackground(.hidden) // Hide default background
             .padding(.bottom)
             
             Button(action: {
@@ -202,6 +204,7 @@ struct GoalListView: View {
         }
     }
 }
+
 
 struct GoalRowView: View {
     var goal: Goal
