@@ -29,7 +29,6 @@ class GoalViewModel: ObservableObject {
         }
     }
     
-    
     // Function to save goals (e.g., to UserDefaults)
     func saveGoals() {
         guard let encoded = try? JSONEncoder().encode(goals) else { return }
@@ -43,7 +42,6 @@ class GoalViewModel: ObservableObject {
         goals = decodedGoals
     }
 
-    
     // Get the total number of goals for a specific date
     func totalGoals(for date: Date) -> Int {
         return goalsForDate(date).count
@@ -55,8 +53,6 @@ class GoalViewModel: ObservableObject {
         return goalsForTheDay.filter { !$0.isCompleted }.count
     }
 
-    // New Methods for ProgressScreen:
-    
     // Function to get the total number of goals
     var totalGoals: Int {
         goals.count
@@ -97,5 +93,115 @@ class GoalViewModel: ObservableObject {
         return goals.filter {
             $0.isCompleted && calendar.isDate($0.dueDate, equalTo: year, toGranularity: .year)
         }.count
+    }
+
+    // Calculate the average number of goals completed per day
+    var averageGoalsCompletedPerDay: Double {
+        let completedGoals = goals.filter { $0.isCompleted }
+        guard !completedGoals.isEmpty else { return 0.0 }
+        let totalDays = completedGoals.map { $0.dueDate }.uniqueDates().count
+        return Double(completedGoals.count) / Double(totalDays)
+    }
+
+    // Calculate the average number of goals completed per week
+    var averageGoalsCompletedPerWeek: Double {
+        let completedGoals = goals.filter { $0.isCompleted }
+        guard !completedGoals.isEmpty else { return 0.0 }
+        let totalWeeks = completedGoals.map { Calendar.current.component(.weekOfYear, from: $0.dueDate) }.uniqueValues().count
+        return Double(completedGoals.count) / Double(totalWeeks)
+    }
+
+    // Calculate the average number of goals completed per month
+    var averageGoalsCompletedPerMonth: Double {
+        let completedGoals = goals.filter { $0.isCompleted }
+        guard !completedGoals.isEmpty else { return 0.0 }
+        let totalMonths = completedGoals.map { Calendar.current.component(.month, from: $0.dueDate) }.uniqueValues().count
+        return Double(completedGoals.count) / Double(totalMonths)
+    }
+
+    // Calculate the current goal completion streak
+    var currentGoalCompletionStreak: Int {
+        let completedDates = goals.filter { $0.isCompleted }.map { Calendar.current.startOfDay(for: $0.dueDate) }.sorted()
+        guard !completedDates.isEmpty else { return 0 }
+        
+        var streak = 0
+        var currentStreak = 1
+        let calendar = Calendar.current
+        
+        for i in 1..<completedDates.count {
+            if calendar.isDate(completedDates[i], inSameDayAs: calendar.date(byAdding: .day, value: -1, to: completedDates[i - 1])!) {
+                currentStreak += 1
+            } else {
+                streak = max(streak, currentStreak)
+                currentStreak = 1
+            }
+        }
+        return max(streak, currentStreak)
+    }
+
+    // Calculate the highest goal completion streak
+    var highestGoalCompletionStreak: Int {
+        let completedDates = goals.filter { $0.isCompleted }.map { Calendar.current.startOfDay(for: $0.dueDate) }.sorted()
+        guard !completedDates.isEmpty else { return 0 }
+        
+        var streak = 0
+        var currentStreak = 1
+        let calendar = Calendar.current
+        
+        for i in 1..<completedDates.count {
+            if calendar.isDate(completedDates[i], inSameDayAs: calendar.date(byAdding: .day, value: -1, to: completedDates[i - 1])!) {
+                currentStreak += 1
+            } else {
+                streak = max(streak, currentStreak)
+                currentStreak = 1
+            }
+        }
+        return max(streak, currentStreak)
+    }
+
+    // Data structure for the bar chart
+    struct GoalsCompletedPerDay: Identifiable {
+        let id = UUID()
+        let date: Date
+        let count: Int
+    }
+
+    // Computed property for the bar graph data
+    var goalsCompletedEachDayThisMonth: [GoalsCompletedPerDay] {
+        let calendar = Calendar.current
+        let currentMonth = Date()
+        let daysInMonth = calendar.range(of: .day, in: .month, for: currentMonth)!
+        
+        var goalsCompleted: [GoalsCompletedPerDay] = []
+        
+        for day in daysInMonth {
+            if let date = calendar.date(byAdding: .day, value: day - 1, to: calendar.startOfMonth(for: currentMonth)!) {
+                let count = goals.filter { $0.isCompleted && calendar.isDate($0.dueDate, inSameDayAs: date) }.count
+                goalsCompleted.append(GoalsCompletedPerDay(date: date, count: count))
+            }
+        }
+        
+        return goalsCompleted
+    }
+}
+
+// Extensions for unique values
+extension Array where Element == Date {
+    func uniqueDates() -> [Date] {
+        Array(Set(self.map { Calendar.current.startOfDay(for: $0) }))
+    }
+}
+
+extension Array where Element: Hashable {
+    func uniqueValues() -> [Element] {
+        Array(Set(self))
+    }
+}
+
+// Extension to get the start of the month
+extension Calendar {
+    func startOfMonth(for date: Date) -> Date? {
+        let components = dateComponents([.year, .month], from: date)
+        return self.date(from: components)
     }
 }

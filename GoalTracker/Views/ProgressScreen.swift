@@ -180,21 +180,6 @@ struct ProgressScreen: View {
                             .foregroundColor(.white)
                     }
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        if let index = viewModel.goals.firstIndex(where: { $0.id == goal.id }) {
-                            viewModel.goals[index].isCompleted.toggle()
-                            viewModel.saveGoals()
-                        }
-                    }
-                    .contextMenu {
-                        Button(action: {
-                            goalToEdit = goal
-                            isAddGoalPresented = true
-                        }) {
-                            Text("Edit Goal")
-                            Image(systemName: "pencil")
-                        }
-                    }
                 }
                 .listRowBackground(Color(red: 20/255, green: 25/255, blue: 40/255))
             }
@@ -204,9 +189,6 @@ struct ProgressScreen: View {
         .padding()
         .background(Color(red: 20/255, green: 25/255, blue: 40/255).edgesIgnoringSafeArea(.all))
         .sheet(isPresented: $isAddGoalPresented, onDismiss: { goalToEdit = nil }) {
-            if let goalToEdit = goalToEdit {
-                CreateGoalView(goal: $goalToEdit, viewModel: viewModel, isPresented: $isAddGoalPresented)
-            }
         }
     }
     
