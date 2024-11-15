@@ -9,11 +9,37 @@ import SwiftUI
 
 class GoalViewModel: ObservableObject {
     @Published var goals: [Goal] = []  // The list of goals
+    @Published var achievements: [Achievement] = [] //List of achievements
+    
     
     // Initialize and load goals from persistent storage when the view model is created
     init() {
         loadGoals()  // Load goals from persistent storage when the view model is initialized
+        achievements = [ //Achievement list
+            Achievement(title: "First Goal", description: "Complete your first goal", isUnlocked: false, icon: "star"),
+                       Achievement(title: "7-Day Streak", description: "Complete goals for 7 days in a row", isUnlocked: false, icon: "flame"),
+                       Achievement(title: "10 Goals Achieved", description: "Complete 10 goals", isUnlocked: false, icon: "checkmark.seal"),
+                       Achievement(title: "50 Goals Achieved", description: "Complete 50 goals", isUnlocked: false, icon: "checkmark.circle.fill"),
+                       Achievement(title: "100 Goals Achieved", description: "Complete 100 goals", isUnlocked: false, icon: "checkmark.square.fill"),
+                       Achievement(title: "Goal Prodigy", description: "Complete 500 goals", isUnlocked: false, icon: "star.fill"),
+                       Achievement(title: "Goal Guru", description: "Complete 1000 goals", isUnlocked: false, icon: "crown.fill"),
+                       
+                       Achievement(title: "Daily Goal Setter", description: "Complete a goal every day for a week", isUnlocked: false, icon: "calendar.circle"),
+                       Achievement(title: "Weekly Warrior", description: "Complete a goal every day for four weeks", isUnlocked: false, icon: "calendar.badge.exclamationmark"),
+                       Achievement(title: "Monthly Master", description: "Complete a goal every day for an entire month", isUnlocked: false, icon: "calendar.badge.plus"),
+                       Achievement(title: "100-Day Streak", description: "Complete a goal daily for 100 days", isUnlocked: false, icon: "calendar.circle.fill"),
+                       Achievement(title: "Year of Goals", description: "Complete a goal every day for an entire year", isUnlocked: false, icon: "calendar.circle.fill"),
+                       
+                       Achievement(title: "Weekend Warrior", description: "Complete a goal every weekend for a month", isUnlocked: false, icon: "calendar.circle.fill"),
+                       Achievement(title: "Early Riser", description: "Complete a goal before 9 a.m. for seven days straight", isUnlocked: false, icon: "sunrise"),
+                       Achievement(title: "Night Owl", description: "Complete a goal after 8 p.m. for seven days straight", isUnlocked: false, icon: "moon.stars.fill"),
+                       Achievement(title: "Goal Getter", description: "Complete a goal every day, Monday through Friday, for a month", isUnlocked: false, icon: "sun.max.fill"),
+                       Achievement(title: "Regular Reacher", description: "Complete goals on a regular schedule (e.g., every Tuesday and Thursday for a month)", isUnlocked: false, icon: "clock.fill")
+
+                ]
+                updateAchievements()
     }
+   
     
     // Filter goals by a specific date
     func goalsForDate(_ date: Date) -> [Goal] {
@@ -182,6 +208,65 @@ class GoalViewModel: ObservableObject {
         }
         
         return goalsCompleted
+    }
+    
+    func updateAchievements() {
+            if goals.count >= 1 {
+                unlockAchievement(withTitle: "First Goal")
+            }
+            if currentGoalCompletionStreak >= 7 {
+                unlockAchievement(withTitle: "7-Day Streak")
+            }
+            if goalsMet >= 10 {
+                unlockAchievement(withTitle: "10 Goals Achieved")
+            }
+            if goalsMet >= 50 {
+                unlockAchievement(withTitle: "50 Goals Achieved")
+            }
+            if goalsMet >= 100 {
+                unlockAchievement(withTitle: "100 Goals Achieved")
+            }
+            if goalsMet >= 500 {
+                unlockAchievement(withTitle: "Goal Prodigy")
+            }
+            if goalsMet >= 1000 {
+                unlockAchievement(withTitle: "Goal Guru")
+            }
+            if currentGoalCompletionStreak >= 7 {
+                unlockAchievement(withTitle: "Daily Goal Setter")
+            }
+            if currentGoalCompletionStreak >= 28 {
+                unlockAchievement(withTitle: "Weekly Warrior")
+            }
+            if currentGoalCompletionStreak >= 30 {
+                unlockAchievement(withTitle: "Monthly Master")
+            }
+            if currentGoalCompletionStreak >= 100 {
+                unlockAchievement(withTitle: "100-Day Streak")
+            }
+            if currentGoalCompletionStreak >= 365 {
+                unlockAchievement(withTitle: "Year of Goals")
+            }
+            if goalConsistencyOnWeekends() {
+                unlockAchievement(withTitle: "Weekend Warrior")
+            }
+        }
+
+        // Achievement unlock
+    func unlockAchievement(withTitle title: String) {
+        if let index = achievements.firstIndex(where: { $0.title == title && !$0.isUnlocked }) {
+            achievements[index].isUnlocked = true
+        }
+    }
+
+        // Weekend achievement check
+    func goalConsistencyOnWeekends() -> Bool {
+        return goals.filter { Calendar.current.isDateInWeekend($0.dueDate) }.count >= 4
+    }
+
+        // Early riser achievement check
+    func earlyRiser() -> Bool {
+        return goals.filter { Calendar.current.isDateInToday($0.dueDate) && Calendar.current.component(.hour, from: $0.dueDate) < 9 }.count >= 7
     }
 }
 
