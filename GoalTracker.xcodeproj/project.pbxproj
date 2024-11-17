@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DB326F792CE907E50017012B /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = DB326F782CE907E50017012B /* GoogleGenerativeAI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		D70A485A2CDAD2E500C5F909 /* GoalTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoalTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -15,6 +19,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				"Views/GenerativeAI-Info.plist",
 			);
 			target = D70A48592CDAD2E500C5F909 /* GoalTracker */;
 		};
@@ -36,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB326F792CE907E50017012B /* GoogleGenerativeAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +84,7 @@
 			);
 			name = GoalTracker;
 			packageProductDependencies = (
+				DB326F782CE907E50017012B /* GoogleGenerativeAI */,
 			);
 			productName = GoalTracker;
 			productReference = D70A485A2CDAD2E500C5F909 /* GoalTracker.app */;
@@ -107,6 +114,9 @@
 			);
 			mainGroup = D70A48512CDAD2E500C5F909;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DB326F772CE907E50017012B /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D70A485B2CDAD2E500C5F909 /* Products */;
 			projectDirPath = "";
@@ -341,6 +351,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DB326F772CE907E50017012B /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/generative-ai-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DB326F782CE907E50017012B /* GoogleGenerativeAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB326F772CE907E50017012B /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
+			productName = GoogleGenerativeAI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D70A48522CDAD2E500C5F909 /* Project object */;
 }
