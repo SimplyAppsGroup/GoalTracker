@@ -48,10 +48,10 @@ User receives reminders for each goal
     * User can log achievements.
 - [X] **Goal Detail Screen**
     * User can set and edit reminders for each goal.
-- [ ] **Progress Screen**
+- [X] **Progress Screen**
     * User can track goal progress/completion. 
     * User can view streaks for consistency.
-- [ ] **Insights Screen**
+- [X] **Insights Screen**
     * User can see AI recommendations and feedback.
 
 ### 3. Navigation
