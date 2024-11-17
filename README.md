@@ -61,8 +61,9 @@ User receives reminders for each goal
 
 - [X] Home
 - [X] Goals
-- [ ] Progress
-- [ ] Insights
+- [X] Progress
+- [X] Insights
+- [X] Achievements
 
 **Flow Navigation** (Screen to Screen)
 
@@ -75,12 +76,12 @@ User receives reminders for each goal
     * Leads to Home Screen
     * Leads to Progress Screen
 
-- [ ] **Progress Screen**
+- [X] **Progress Screen**
     * Leads to Home Screen
     * Leads to Goal Detail Screen
     * Leads to Insights Screen
 
-- [ ] **Insights Screen**
+- [X] **Insights Screen**
     * Leads to Home SCreen
     * Leads to Goal Detail Screen
     * Leads to Progress Screen
